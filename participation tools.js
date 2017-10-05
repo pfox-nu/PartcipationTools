@@ -40,27 +40,32 @@
 
         // Add Elements
         var menuDiv = document.createElement('div');
-        menuDiv.innerHTML = '<button id="foxinatorButton" type="button">Randomizer</button>&nbsp;<button id="clearButton" type="button">Clear Nicknames</button>';
+        menuDiv.innerHTML = '<a id="foxinatorButton" href="#">Randomizer</a>&nbsp;<a id="clearButton" href="#">Clear Nicknames</a>&nbsp;<a id="helpButton" href="#">Help</a>';
         menuDiv.setAttribute ('id', 'menuDiv');
         innerContainer.appendChild (menuDiv);
 
         var foxinatorDiv = document.createElement('div');
-        foxinatorDiv.innerHTML = '<button id="myButton" type="button"> May the odds ever be in your favor!</button><span id="victim">Good Luck!</span>';
+        foxinatorDiv.innerHTML = '<a id="randomizerButton" href="#">May the odds ever be in your favor!</a><span id="victim">Good Luck!</span><img id="victimPhoto" />';
         foxinatorDiv.setAttribute ('id', 'foxinatorDiv');
         innerContainer.appendChild (foxinatorDiv);
 
         var nicknameDiv = document.createElement('div');
-        nicknameDiv.innerHTML = '<span id="selectedStudentName">&nbsp;</span>Nickname:&nbsp;<input id="nicknameText" type="text" /><button id="nicknameButton" type="button">Add</button><input type="hidden" id="nicknameId" />';
+        nicknameDiv.innerHTML = '<span id="selectedStudentName"></span>Nickname<input id="nicknameText" type="text" /><a id="nicknameButton" href="#">Add</a><input type="hidden" id="nicknameId" />';
         nicknameDiv.setAttribute ('id', 'nicknameDiv');
         innerContainer.appendChild(nicknameDiv);
+
+        var helpDiv = document.createElement('div');
+        helpDiv.innerHTML = '<ul><li><b>Randomizer</b> - Randomly selects someone from the Present list.</li><li><b>Add Nickname</b> - Double-click a name in any list</li><li><b>Delete nickname</b> - Double-click a highlighted name in any list</li><li><b>Clear Nicknames</b> - Removes all nicknames. You can edit these directly through Tampermonkey on the Storage page.</li></ul>';
+        helpDiv.setAttribute ('id', 'helpDiv');
+        innerContainer.appendChild(helpDiv);
 
         container.appendChild(innerContainer);
         document.body.appendChild(container);
         document.body.appendChild(photoContainer);
 
         // Add event listeners
-        document.getElementById("myButton").addEventListener (
-            "click", ButtonClickAction, false
+        document.getElementById("randomizerButton").addEventListener (
+            "click", RandomizerButtonClickAction, false
         );
         document.getElementById("clearButton").addEventListener (
             "click", ClearButtonClickAction, false
@@ -71,9 +76,12 @@
         document.getElementById("foxinatorButton").addEventListener (
             "click", FoxinatorButtonClickAction, false
         );
-        absentList.ondblclick = ListBoxDoubleClickAction;
-        presentList.ondblclick = ListBoxDoubleClickAction;
-        exemptList.ondblclick = ListBoxDoubleClickAction;
+        document.getElementById("helpButton").addEventListener (
+            "click", HelpButtonClickAction, false
+        );
+        absentList.dblclick(ListBoxDoubleClickAction);
+        presentList.dblclick(ListBoxDoubleClickAction);
+        exemptList.dblclick(ListBoxDoubleClickAction);
 
         $("option").hover(function (e){
             var target = $(e.target);
@@ -88,18 +96,6 @@
         // Set custom styles
         GM_addStyle(multilineStr ( function () {
             /*!
-            #photoContainer{
-                position: absolute;
-                top: 0;
-                right: 0;
-                padding:3px;
-                margin:3px;
-                border: 2px outset black;
-                background: #FC0;
-            }
-            #container button{
-                font-size: 10px;
-            }
             #container {
                 position: absolute;
                 top: 0;
@@ -110,10 +106,52 @@
                 padding: 3px;
                 opacity: 0.9;
                 z-index: 1100;
+                font-size: 10px;
+            }
+            #container button{
+                font-size: 10px;
+            }
+            #container ul{
+            }
+            #photoContainer{
+                position: absolute;
+                top: 0;
+                right: 0;
+                padding:3px;
+                margin:3px;
+                border: 2px outset black;
+                background: #FC0;
+            }
+            #menuDiv a{
+                font-size: 10px;
+                color:black;
+                margin-right: 3px;
+                font-weight: bold;
+            }
+            #selectedStudentName{
+                margin-right: 5px;
+            }
+            #nicknameText{
+                margin-left: 5px;
+            }
+            #nicknameButton{
+                margin-left: 5px;
+                margin-right: 5px;
+            }
+            #victimPhoto{
+                float:right;
             }
             #foxinatorDiv{
                 display: none;
                 height:25px;
+                border: 2px outset black;
+                margin: 3px;
+                padding: 3px;
+                opacity: 0.9;
+                z-index: 1100;
+            }
+            #helpDiv{
+                display: none;
                 border: 2px outset black;
                 margin: 3px;
                 padding: 3px;
@@ -147,17 +185,24 @@
         $('#foxinatorDiv').toggle();
     }
 
-    function ButtonClickAction (e) {
+    function RandomizerButtonClickAction (e) {
         var select = document.getElementById('cphBody_lstPresent');
         var items = select.getElementsByTagName('option');
         if(items.length > 0){
             var index = Math.floor(Math.random() * items.length);
             select.selectedIndex = index;
 
-            var selected = select.options[select.selectedIndex].text;
+            var option = select.options[select.selectedIndex];
+            var selected = option.text;
             var victim = document.getElementById('victim');
             victim.textContent = selected;
+
+            $('#victimPhoto').attr('src', "/picture.aspx?s="+option.value);
         }
+    }
+
+    function HelpButtonClickAction(e){
+        $("#helpDiv").toggle();
     }
 
     function ClearButtonClickAction (e) {
@@ -171,9 +216,10 @@
     }
 
     function ListBoxDoubleClickAction(e){
-        var option = e.srcElement;
+        var option = e.target;
         var studentId = option.value;
         var existing = GM_getValue(studentId);
+        console.log(existing);
         if(existing){
             if(confirm("Are you sure you want to remove this nickname? The page will reload.")){
                 GM_deleteValue(studentId);
@@ -208,7 +254,9 @@
             $.each(lists, function(index, list){
                 var option = list.find("option[value='"+value+"']");
                 if(option){
+                    var nickname = GM_getValue(value);
                     option.addClass('highlight');
+                    option.html(option.html() + " (" + nickname + ")");
                 }
             });
         });
