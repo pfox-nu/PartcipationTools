@@ -124,6 +124,9 @@
                 border: 2px outset black;
                 background: #FC0;
             }
+            #studentPhoto{
+                display:block;
+            }
             #menuDiv a{
                 font-size: 10px;
                 color:black;
@@ -195,8 +198,6 @@
             var selected = option.text;
             var victim = document.getElementById('victim');
             victim.textContent = selected;
-
-            $('#victimPhoto').attr('src', "/picture.aspx?s="+option.value);
         }
     }
 
