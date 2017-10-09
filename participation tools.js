@@ -41,7 +41,7 @@
 
         // Add Elements
         var menuDiv = document.createElement('div');
-        menuDiv.innerHTML = '<a id="foxinatorButton" href="#">Randomizer</a>&nbsp;<a id="clearButton" href="#">Clear Nicknames</a>&nbsp;<a id="helpButton" href="#">Help</a>';
+        menuDiv.innerHTML = '<a id="foxinatorButton" href="#">Randomizer</a>&nbsp;<a id="clearButton" href="#">Clear aliases</a>&nbsp;<a id="helpButton" href="#">Help</a>';
         menuDiv.setAttribute ('id', 'menuDiv');
         innerContainer.appendChild (menuDiv);
 
@@ -50,13 +50,13 @@
         foxinatorDiv.setAttribute ('id', 'foxinatorDiv');
         innerContainer.appendChild (foxinatorDiv);
 
-        var nicknameDiv = document.createElement('div');
-        nicknameDiv.innerHTML = '<span id="selectedStudentName"></span>Nickname<input id="nicknameText" type="text" /><a id="nicknameButton" href="#">Add</a><input type="hidden" id="nicknameId" />';
-        nicknameDiv.setAttribute ('id', 'nicknameDiv');
-        innerContainer.appendChild(nicknameDiv);
+        var aliasDiv = document.createElement('div');
+        aliasDiv.innerHTML = '<span id="selectedStudentName"></span>Alias<input id="aliasText" type="text" /><a id="aliasButton" href="#">Add</a><input type="hidden" id="aliasId" />';
+        aliasDiv.setAttribute ('id', 'aliasDiv');
+        innerContainer.appendChild(aliasDiv);
 
         var helpDiv = document.createElement('div');
-        helpDiv.innerHTML = '<ul><li><b>Randomizer</b> - Randomly selects someone from the Present list.</li><li><b>Add Nickname</b> - Double-click a name in any list</li><li><b>Delete nickname</b> - Double-click a highlighted name in any list</li><li><b>Clear Nicknames</b> - Removes all nicknames. You can edit these directly through Tampermonkey on the Storage page.</li></ul>';
+        helpDiv.innerHTML = '<ul><li><b>Randomizer</b> - Randomly selects someone from the Present list.</li><li><b>Add Alias</b> - Double-click a name in any list</li><li><b>Delete Alias</b> - Double-click a highlighted name in any list</li><li><b>Clear Asliases</b> - Removes all aliases. You can edit these directly through Tampermonkey on the Storage page.</li></ul>';
         helpDiv.setAttribute ('id', 'helpDiv');
         innerContainer.appendChild(helpDiv);
 
@@ -71,7 +71,7 @@
         document.getElementById("clearButton").addEventListener (
             "click", ClearButtonClickAction, false
         );
-        document.getElementById("nicknameButton").addEventListener (
+        document.getElementById("aliasButton").addEventListener (
             "click", AddHighlightStudent, false
         );
         document.getElementById("foxinatorButton").addEventListener (
@@ -133,10 +133,10 @@
             #selectedStudentName{
                 margin-right: 5px;
             }
-            #nicknameText{
+            #aliasText{
                 margin-left: 5px;
             }
-            #nicknameButton{
+            #aliasButton{
                 margin-left: 5px;
                 margin-right: 5px;
             }
@@ -157,7 +157,7 @@
                 opacity: 0.9;
                 z-index: 1100;
             }
-            #nicknameDiv {
+            #aliasDiv {
                 display: none;
                 top: 35px;
                 left: 0;
@@ -220,12 +220,12 @@
         var existing = GM_getValue(studentId);
         console.log(existing);
         if(existing){
-            if(confirm("Are you sure you want to remove this nickname? The page will reload.")){
+            if(confirm("Are you sure you want to remove this alias? The page will reload.")){
                 GM_deleteValue(studentId);
                 location.reload();
             }
         }else{
-            PromptForNickname(option);
+            PromptForAlias(option);
         }
     }
 
@@ -253,40 +253,40 @@
             $.each(lists, function(index, list){
                 var option = list.find("option[value='"+value+"']");
                 if(option){
-                    var nickname = GM_getValue(value);
+                    var alias = GM_getValue(value);
                     option.addClass('highlight');
-                    option.html(option.html() + " (" + nickname + ")");
+                    option.html(option.html() + " (" + alias + ")");
                 }
             });
         });
     }
 
-    function PromptForNickname(option){
+    function PromptForAlias(option){
         var studentId = option.value;
         var studentName = option.text;
 
         $("#selectedStudentName").text(studentName);
-        $("#nicknameId").text(studentId);
-        $("#nicknameDiv").show();
-        var nickname = $("#nicknameText").focus();
+        $("#aliasId").text(studentId);
+        $("#aliasDiv").show();
+        $("#aliasText").focus();
     }
 
     function AddHighlightStudent(option){
-        var studentId = $('#nicknameId').text();
-        var nickname = $("#nicknameText").val();
+        var studentId = $('#aliasId').text();
+        var alias = $("#aliasText").val();
 
-        if(!nickname || nickname === ''){
-            alert("no nickname supplied");
+        if(!alias || alias === ''){
+            alert("no alias supplied");
         }
-        $("#nicknameText").val('');
+        $("#aliasText").val('');
         $("#selectedStudentName").text('');
-        $("#nicknameId").text('');
-        $("#nicknameDiv").hide();
+        $("#aliasId").text('');
+        $("#aliasDiv").hide();
 
         var key = studentId;
         var value = GM_getValue(key);
         if(!value){
-            GM_setValue(key, nickname);
+            GM_setValue(key, alias);
         }else{
             GM_deleteValue(key, '');
         }
