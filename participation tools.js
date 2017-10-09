@@ -35,6 +35,7 @@
         innerContainer.setAttribute ('id', 'innerContainer');
 
         var photoContainer = document.createElement('div');
+        photoContainer.innerHTML = '<img id="studentPhoto" />';
         photoContainer.setAttribute ('id', 'photoContainer');
 
 
@@ -45,7 +46,7 @@
         innerContainer.appendChild (menuDiv);
 
         var foxinatorDiv = document.createElement('div');
-        foxinatorDiv.innerHTML = '<a id="randomizerButton" href="#">May the odds ever be in your favor!</a><span id="victim">Good Luck!</span><img id="victimPhoto" />';
+        foxinatorDiv.innerHTML = '<a id="randomizerButton" href="#">May the odds ever be in your favor!</a><span id="victim">Good Luck!</span>';
         foxinatorDiv.setAttribute ('id', 'foxinatorDiv');
         innerContainer.appendChild (foxinatorDiv);
 
@@ -114,6 +115,7 @@
             #container ul{
             }
             #photoContainer{
+                display: none;
                 position: absolute;
                 top: 0;
                 right: 0;
@@ -137,9 +139,6 @@
             #nicknameButton{
                 margin-left: 5px;
                 margin-right: 5px;
-            }
-            #victimPhoto{
-                float:right;
             }
             #foxinatorDiv{
                 display: none;
@@ -232,13 +231,13 @@
 
     // Helper Functions
     function ShowImage(id){
-        photoContainer.innerHTML = '<img src="/picture.aspx?s='+id+'" />';
-        $('photoContainer').show();
+        $('#studentPhoto').attr('src', "/picture.aspx?s="+id);
+        $('#photoContainer').show();
     }
 
     function HideImage(){
-        photoContainer.innerHTML = '';
-        $('photoContainer').hide();
+        $('#studentPhoto').attr('src', '');
+        $('#photoContainer').hide();
     }
 
     function GetCourseName(text){
