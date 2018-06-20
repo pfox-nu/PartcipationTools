@@ -125,7 +125,11 @@
                 background: #FC0;
             }
             #studentPhoto{
-                display:block;
+                display: block;
+                max-width:500px;
+                max-height:500px;
+                width: auto;
+                height: auto;
             }
             #menuDiv a{
                 font-size: 10px;
@@ -232,7 +236,7 @@
 
     // Helper Functions
     function ShowImage(id){
-        $('#studentPhoto').attr('src', "/picture.aspx?s="+id);
+        $('#studentPhoto').attr('src', "/picture.aspx?s="+id + "&z=b");
         $('#photoContainer').show();
     }
 
